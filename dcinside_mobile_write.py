@@ -22,7 +22,7 @@ class DcWrite():
         self.name = article author.
         self.passwd = article password.
         self.subject = article subject.
-        self.contents = article contents.
+        self.memo = article contents.
         """
         self.url = "http://m.dcinside.com/write.php?id={}&mode=write"\
                    .format(id_gall)
@@ -33,7 +33,11 @@ class DcWrite():
         self.memo = contents
 
     def get_msg_data(self, option_data):
-        """Method return msg data."""
+        """
+        Method return msg data.
+
+        req = request.
+        """
         url = "http://m.dcinside.com/_option_write.php"
         self.session.headers["Referer"] = self.url
         self.session.headers["X-Requested-With"] = "XMLHttpRequest"
@@ -45,7 +49,11 @@ class DcWrite():
             time.sleep(1)
 
     def get_option_data(self):
-        """Method return option_write data."""
+        """
+        Method return option_write data.
+
+        data = post data for get block key.
+        """
         data = dict()
         data["id"] = self.id_gall
         data["w_subject"] = self.subject
@@ -55,8 +63,12 @@ class DcWrite():
 
         return data
 
-    def get_post_data(self, html):
-        """Method return post data in wrtie page."""
+    def get_code_value(self, html):
+        """
+        Method return code data in wrtie page.
+
+        re_code = code value regex.
+        """
         re_code = re.compile("name=\"code\" value=\"(.*?)\"")
 
         return re_code.findall(html)[0]
@@ -66,14 +78,24 @@ class DcWrite():
         return self.session.get(self.url).text
 
     def run(self):
-        """Running method."""
+        """
+        Running method.
+
+        code_token = mobile write page code value.
+        msg = block key.
+        """
         self.set_session()
         page = self.get_write_page()
-        code_token = self.get_post_data(page)
-        option_data = self.get_option_data()
-        # msg["data"]
-        msg = json.loads(self.get_msg_data(option_data))
-        self.submit(option_data, code_token, msg)
+        code_token = self.get_code_value(page)
+        msg = json.loads(self.get_msg_data(self.get_option_data()))
+        result = self.submit(code_token, msg["data"]).text
+
+        if "refresh" in result:
+            print("Success")
+            print("http://gall.dcinside.com/{}".format(self.id_gall))
+        else:
+            print("Failed")
+            print(result)
 
     def set_session(self):
         """
@@ -84,11 +106,37 @@ class DcWrite():
         self.session = requests.session()
         self.session.headers["User-Agent"] = "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/603.1.23 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1"
 
-    def submit(self, option_data, code_token, msg):
-        """Method last submit."""
-        pass
+    def submit(self, code_token, msg):
+        """
+        Method last submit.
+
+        url = write submit page url.
+        data = post data.
+        """
+        url = "http://upload.dcinside.com/g_write.php"
+        data = dict()
+        data["name"] = (None, self.name)
+        data["password"] = (None, self.passwd)
+        data["subject"] = (None, self.subject)
+        data["memo"] = (None, self.memo)
+        data["user_id"] = (None, '')
+        data["page"] = (None, '')
+        data["mode"] = (None, "write")
+        data["id"] = (None, self.id_gall)
+        data["code"] = (None, code_token)
+        data["no"] = (None, '')
+        data["mobile_key"] = (None, "mobile_nomember")
+        data["t_ch2"] = (None, '')
+        data["FL_DATA"] = (None, '')
+        data["OFL_DATA"] = (None, '')
+        data["delcheck"] = (None, '')
+        data["Block_key"] = (None, msg)
+        data["filter"] = (None, '1')
+        data["wikiTag"] = (None, '')
+
+        return self.session.post(url, files=data)
 
 
-if __name__ == '__main__':
-    test = DcWrite("4", "test", "test", "test", "test")
+if __name__ == "__main__":
+    test = DcWrite("4", "이름", "비밀번호", "제목", "내용")
     test.run()
