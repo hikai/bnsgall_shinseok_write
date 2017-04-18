@@ -2,13 +2,16 @@
 """
 Script write today shinseok-shop in blade and soul gallery.
 
-. . .
+Hikai
 """
 from datetime import datetime
 from dcinside_mobile_write import DcWrite
 from shinseokshop_parse import Parser
 
 if __name__ == "__main__":
+	if datetime.today().strftime("%H") != "00":
+		return
+
     obj_parse = Parser()
     parse_data = obj_parse.parse_data()
 
