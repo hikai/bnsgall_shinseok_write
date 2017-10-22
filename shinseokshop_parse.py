@@ -2,7 +2,7 @@
 """
 Shinseok-shop parse without selenium.
 
-Today shinseok-shop parse.
+@hikai
 """
 from bs4 import BeautifulSoup
 import requests
