@@ -13,7 +13,7 @@ import time
 class DcWrite():
     """DCinside article write class."""
 
-    def __init__(self, id_gall, name, passwd, subject, contents):
+    def __init__(self, id_gall, name, passwd, subject, contents, wiki_tag):
         """
         Dcwrite initialize method.
 
@@ -31,6 +31,7 @@ class DcWrite():
         self.passwd = passwd
         self.subject = subject
         self.memo = contents
+        self.wiki_tag = wiki_tag
 
     def get_msg_data(self, option_data):
         """
@@ -69,7 +70,7 @@ class DcWrite():
 
         re_code = code value regex.
         """
-        re_code = re.compile("name=\"code\" value=\"(.*?)\"")
+        re_code = re.compile("id=\"code\" value=\"(.*?)\"")
 
         return re_code.findall(html)[0]
 
@@ -85,8 +86,7 @@ class DcWrite():
         msg = block key.
         """
         self.set_session()
-        page = self.get_write_page()
-        code_token = self.get_code_value(page)
+        code_token = self.get_code_value(self.get_write_page())
         msg = json.loads(self.get_msg_data(self.get_option_data()))
         result = self.submit(code_token, msg["data"]).text
 
@@ -132,11 +132,11 @@ class DcWrite():
         data["delcheck"] = (None, '')
         data["Block_key"] = (None, msg)
         data["filter"] = (None, '1')
-        data["wikiTag"] = (None, '')
+        data["wikiTag"] = (None, self.wiki_tag)
 
         return self.session.post(url, files=data)
 
 
 if __name__ == "__main__":
-    test = DcWrite("4", "이름", "비밀번호", "제목", "내용")
+    test = DcWrite("4", "이름", "비밀번호", "제목", "내용", "위키 태그")
     test.run()
