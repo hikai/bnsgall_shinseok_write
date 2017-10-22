@@ -19,5 +19,5 @@ if __name__ == "__main__":
     for key in parse_data:
         str_result += "{}: {} 신석\n\n".format(key, parse_data[key])
 
-    writer = DcWrite("bns", "오늘의 신석샵", "dkanehahfmsmsqlalfqjsgh", "★★({})오늘의 신석샵★★".format(datetime.today().strftime("%Y/%m/%d")), str_result)
+    writer = DcWrite("bns", "오늘의 신석샵", "dkanehahfmsmsqlalfqjsgh", "★★({})오늘의 신석샵★★".format(datetime.today().strftime("%Y/%m/%d")), str_result, "신석샵")
     writer.run()
