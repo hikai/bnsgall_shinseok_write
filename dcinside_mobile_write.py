@@ -2,7 +2,7 @@
 """
 DCInside ariticle write script.
 
-Mobile dcinside write.
+@hikai
 """
 import json
 import re
