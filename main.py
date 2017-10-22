@@ -2,7 +2,7 @@
 """
 Script write today shinseok-shop in blade and soul gallery.
 
-Hikai
+@hikai
 """
 from datetime import datetime
 from dcinside_mobile_write import DcWrite
